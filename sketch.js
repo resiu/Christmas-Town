@@ -6,6 +6,7 @@ let pageImages = []; // array of images
 let consequences = []; // array of lists (aka as arrays)
 
 let doorColor;
+let doorColor_livingroom;
 
 let clouds = [];
 
@@ -65,10 +66,11 @@ function preload() {
 function draw() {
   displayCurrentPage();
 
-  for (let i = 0; i < clouds.length; i++) {
-    clouds[i].move();
-    clouds[i].display();
+  // Only show clouds when on the first scene (index 0)
+  if (currentPageIndex === 0) {
+    updateAndDrawClouds();
   }
+
 
 }
 
@@ -81,6 +83,7 @@ function setup() {
   background(0);
 
   doorColor = color('#893f00');
+  doorColor_livingroom = color('#5b3022');
 
   for (let i = 0; i < 5; i++) {
     let xPos = random(0, width);
@@ -147,13 +150,19 @@ function mousePressed() {
   if (detectColor(doorColor)) {
     currentPageIndex = 1; // go to next scene
   }
+  else if (currentPageIndex === 1 && detectColor(doorColor_livingroom)) {
+    currentPageIndex = 0; // go back to town
+  }
+
 }
+
 
 function drawClouds(x,y,spacing,dia){
  
   push();
   translate(x,y);// using translate to move shapes together
  
+  fill(250, 250, 250, 150);
   circle(0,0,dia);// center puff
   circle(-spacing,0,dia);// left puff
   circle(spacing,0,dia);// right puff
@@ -161,3 +170,11 @@ function drawClouds(x,y,spacing,dia){
  
   pop();
 }
+
+function updateAndDrawClouds() {
+  for (let i = 0; i < clouds.length; i++) {
+    clouds[i].move();
+    clouds[i].display();
+  }
+}
+

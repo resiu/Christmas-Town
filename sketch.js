@@ -235,7 +235,28 @@ function draw() {
     updateAndDrawClouds();
     // Add snowflakes in town scene
     updateAndDrawSnowflakes();
+    displayTownText();
   }
+    // --- Hover detection for interactive objects ---
+  if (currentPageIndex === 0 && detectColor(doorColor)) {
+    cursor(HAND); // town door
+  } else if (currentPageIndex === 1) {
+    if (detectColor(doorColor_livingroom)) {
+      cursor(HAND); // living room door
+    } else if (isNearTree(mouseX, mouseY)) {
+      cursor(HAND); // tree
+    } else if (isNearRadio(mouseX, mouseY)) {
+      cursor(HAND); // radio
+    } else if (isNearFireplace(mouseX, mouseY)) {
+      cursor(HAND); // fireplace
+    } else {
+      cursor(ARROW); // default
+    }
+  } else {
+    cursor(ARROW);
+  }
+
+
 
   // Living room interactive elements (scene 1)
   if (currentPageIndex === 1) {
@@ -605,4 +626,15 @@ function isNearFireplace(x, y) {
 
   return x > fireplaceX - fireplaceWidth / 2 && x < fireplaceX + fireplaceWidth / 2 &&
          y > fireplaceY - fireplaceHeight / 2 && y < fireplaceY + fireplaceHeight;
+}
+
+function displayTownText() {
+  push();
+    textFont('Georgia');
+    textSize(20);
+    fill(100,100,120);
+    strokeWeight(3);
+    stroke(200,200,200);
+    text("Click a door to enter", 30, height-30);
+  pop();
 }

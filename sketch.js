@@ -8,8 +8,29 @@ let consequences = []; // array of lists (aka as arrays)
 let doorColor;
 let doorColor_livingroom;
 
+// Clouds
 let frontClouds = [];
 let distantClouds = [];
+
+//window lights
+let windowLights = [];
+let windows = [
+    {x:70, y:370, w :55, h:80},
+    {x:70, y:520, w :55, h:80},
+    {x:210, y:400, w :55, h:70},
+    {x:300, y:500, w :55, h:70},
+    {x:215, y:600, w :55, h:70},
+    {x:385, y:400, w :55, h:70},
+    {x:385, y:600, w :55, h:70},
+    {x:510, y:515, w :55, h:70},
+    {x:855, y:580, w :55, h:80},
+    {x:1100, y:370, w :55, h:80},
+    {x:1100, y:520, w :55, h:80},
+    {x:1330, y:400, w :55, h:70},
+    {x:1330, y:500, w :55, h:70},
+    {x:1240, y:600, w :55, h:70}
+];
+
 
 // Audio variables
 let fireplaceSound;
@@ -294,7 +315,6 @@ function preload() {
 
 function draw() {
   displayCurrentPage();
-
   // Only show clouds when on the first scene (index 0)
   if (currentPageIndex === 0) {
     // Add snowflakes in town scene
@@ -305,8 +325,12 @@ function draw() {
     for (let star of stars) {
       star.display();
     }
+
     //clouds on top 
     updateAndDrawClouds();
+    
+    //window lights
+    displayWindowLights();
   }
     // --- Hover detection for interactive objects ---
   if (currentPageIndex === 0 && detectColor(doorColor)) {
@@ -371,6 +395,9 @@ function setup() {
   //Call the setupClouds function
   setupClouds();
 
+  //window Lights
+  setupWindowLights();
+
   // Initialize snowflakes
   for (let i = 0; i < 50; i++) {
     snowflakes.push(new Snowflake(random(width), random(height)));
@@ -396,6 +423,7 @@ function setup() {
   stars.push(new Star(x, y));
 }
 }
+
 function setupClouds() {
   frontClouds = [];
   distantClouds = [];
@@ -419,6 +447,25 @@ function setupClouds() {
   }
 }
 
+function setupWindowLights(){
+    windowLights = [];
+
+   for (let win of windows) {
+    let lightsPerWindow = 20; // more lights per window
+        for (let i = 0; i < lightsPerWindow; i++) {
+            let x = win.x + random(0, win.w);
+            let y = win.y + random(0, win.h);
+            let baseBrightness = random(200, 220);
+            let size = random(3, 4);
+
+            // Each light gets a random phase for smooth twinkle
+            let phase = random(TWO_PI);
+            let speed = random(0.02, 0.06); // twinkle speed
+
+            windowLights.push({ x, y, baseBrightness, size, phase, speed });
+        }
+  }
+}
 
 // Styling for the page layout
 function displayCurrentPage() {
@@ -560,11 +607,33 @@ function updateAndDrawClouds() {
     cloud.move();
     cloud.display();
   }
+  
 //second draw front clouds on top
   for (let cloud of frontClouds){
     cloud.move();
     cloud.display();
   }
+}
+
+function displayWindowLights(){
+    for (let light of windowLights) {
+        //smooth brightness using sin wave
+        let twinkle = sin(frameCount * light.speed + light.phase) * 150;
+        let brightness = constrain(light.baseBrightness + twinkle, 150, 255);
+
+        noStroke();
+
+        //core glow
+        fill(255, 255, 200, brightness);
+        circle(light.x, light.y, light.size);
+
+        //soft halo
+        fill(255, 255, 180, brightness * 0.5);
+        circle(light.x, light.y, light.size * 4);
+
+        fill(255, 255, 150, brightness * 0.3);
+        circle(light.x, light.y, light.size * 8);
+    }
 }
 
 function updateAndDrawSnowflakes() {

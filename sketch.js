@@ -1039,7 +1039,16 @@ function displayTownText() {
     textSize(20);
     fill(100,100,120);
     strokeWeight(3);
-    stroke(200,200,200);
+    //stroke(200,200,200);
     text("Click a door to enter", 30, height-30);
+  pop();
+
+  push();
+    textFont('Georgia');
+    textSize(20);
+    fill(100,100,120);
+    strokeWeight(3);
+    //stroke(200,200,200);
+    text("Click sled for fun", width-450, height-30);
   pop();
 }

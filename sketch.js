@@ -588,13 +588,15 @@ function draw() {
         if (townMusic.isPlaying()) {
             townMusic.stop(); // Stops town music
         }
-        if (!sleighRideSound.isPlaying()) {
+       if (!gameOver && !sleighRideSound.isPlaying()) {
             sleighRideSound.loop();  // Start the audio, and loop it during the game
         } 
 
         // Stop everything if crashed
         if (gameOver) {
-            sleighRideSound.stop(); 
+            if (sleighRideSound.isPlaying()) {
+                sleighRideSound.stop(); // Stop the sled game music if it's playing
+            } 
 
         if (!endingSound.isPlaying()) {
             endingSound.loop();  // Start the audio, and loop it during the game
@@ -1108,6 +1110,10 @@ function goHome() {
     endingSound.stop();  // Stop crash sound
   }
 
+    if (townMusic.isPlaying()) {
+    townMusic.stop();  // If you're in a different scene, stop the town music
+  }
+
   // Reset sled/game variables if needed
   sledX = 1050;
   sledY = 650;
@@ -1115,6 +1121,13 @@ function goHome() {
   playerVY = 0;
   obstacles = [];
   sledSliding = false;
+
+  
+  // Start home music or any other relevant audio
+  if (!townMusic.isPlaying()) {
+    townMusic.loop();  // Loop town music when back to home screen
+  }
+
 }
 
 // Function to retry sled game

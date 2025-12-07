@@ -8,7 +8,66 @@ let consequences = []; // array of lists (aka as arrays)
 let doorColor;
 let doorColor_livingroom;
 
-let clouds = [];
+// Clouds
+let frontClouds = [];
+let distantClouds = [];
+
+//window lights
+let windowLights = [];
+let windows = [
+    {x:70, y:370, w :55, h:80},
+    {x:70, y:520, w :55, h:80},
+    {x:210, y:400, w :55, h:70},
+    {x:300, y:500, w :55, h:70},
+    {x:215, y:600, w :55, h:70},
+    {x:385, y:400, w :55, h:70},
+    {x:385, y:600, w :55, h:70},
+    {x:510, y:515, w :55, h:70},
+    {x:855, y:580, w :55, h:80},
+    {x:1100, y:370, w :55, h:80},
+    {x:1100, y:520, w :55, h:80},
+    {x:1330, y:400, w :55, h:70},
+    {x:1330, y:500, w :55, h:70},
+    {x:1240, y:600, w :55, h:70}
+];
+
+//sled
+let sledImg;
+let sledX, sledY;
+//let sledW, sledH;
+
+let sledSliding = false; // animation
+let sledSlideSpeed = 6; //speed of sled
+
+let sledTrail = [];
+
+let playerX = 200;
+let playerY = 300;
+let playerVY = 0;    // vertical velocity for jumping
+let gravity = 0.6;
+let jumpForce = -10;
+
+let sledW = 70;
+let sledH = 45;
+
+let hillY = 0;
+let hillSpeed = 3;
+
+let groundY = 350;
+
+let obstacles = [];
+let gameOver = false;
+
+//
+let santaImg;
+let santaX, santaY;
+
+let santaSliding = false;
+let santaSlideSpeed= 6 ;
+let santaTrail = [];
+
+let santaW= 70;
+let santaH =45;
 
 // Audio variables
 let fireplaceSound;
@@ -254,6 +313,12 @@ function preload() {
   // Load interactive object images
   radioImg = loadImage('radio.png');
 
+  // Load sled image
+  sledImg = loadImage('sled.png');
+
+  // Load santa image 
+  santaImg = loadImage('santa.png');
+
   // ********************
   // Load Audio
   // ********************
@@ -267,7 +332,6 @@ function draw() {
 
   // Only show clouds when on the first scene (index 0)
   if (currentPageIndex === 0) {
-    updateAndDrawClouds();
     // Add snowflakes in town scene
     updateAndDrawSnowflakes();
     displayTownText();
@@ -275,6 +339,61 @@ function draw() {
     //draw stars
     for (let star of stars) {
       star.display();
+    }
+
+    //clouds on top 
+    updateAndDrawClouds();
+    
+    //window lights
+    displayWindowLights();
+
+    //draw sled
+    image(sledImg, sledX, sledY, sledW, sledH);
+
+    // If sled is sliding, animate it
+    if (sledSliding) {
+        sledX += sledSlideSpeed;   // slide horizontally
+
+        //leaves snow trail puff
+        sledTrail.push(new SledTrailFlake(sledX, sledY +sledH/2));
+
+    // When it slides off screen, switch to sledding screen
+    if (sledX > width + 200) {
+        sledSliding = false;
+        currentPageIndex = 2; // Go to sledding screen
+    }
+
+    }   
+   // Draw sled trail
+    for (let i = sledTrail.length - 1; i >= 0; i--) {
+         let t = sledTrail[i];
+        t.update();
+        t.display();
+  
+        if (t.isGone()) {
+            sledTrail.splice(i, 1);
+        }
+    }
+
+    //draw santa
+    image(santaImg, santaX, santaY, santaW,santaH);
+
+    if (santaSliding) {
+        santaX += santaSlideSpeed;   // slide horizontally
+
+        //leaves snow trail puff
+        santaTrail.push(new SantaTrailFlake(santaX, santaY +santaH/2));
+    
+    }   
+   // Draw santa trail
+    for (let i = santaTrail.length - 1; i >= 0; i--) {
+         let t = santaTrail[i];
+        t.update();
+        t.display();
+  
+        if (t.isGone()) {
+            santaTrail.splice(i, 1);
+        }
     }
   }
     // --- Hover detection for interactive objects ---
@@ -344,6 +463,12 @@ function setup() {
     let cloudSpeed = random(0.5, 2);
     clouds.push(new Cloud(xPos, yPos, cloudSpeed));
   }
+
+  //santa
+  santaW = 350 // its width
+  santaH = santaW * (santaImg.height / santaImg.width); //helps keep the aspect ratio
+  santaX = 1000; //position
+  santaY = 50; //position
 
   // Initialize snowflakes
   for (let i = 0; i < 50; i++) {
@@ -433,6 +558,18 @@ function mousePressed() {
       fireplaceSound.stop();
     }
     fireplaceState = 'off';
+  }
+
+  // Sled Click
+  if (currentPageIndex === 0 && mouseX > sledX && 
+    mouseX < sledX + sledW && mouseY > sledY && mouseY < sledY + sledH) {
+   sledSliding = true;
+  }
+
+ // Santa Click
+  if (currentPageIndex === 0 && mouseX > santaX && 
+    mouseX < santaX + santaW && mouseY > santaY && mouseY < santaY + santaH) {
+   santaSliding = true;
   }
 
   // Living room interactions

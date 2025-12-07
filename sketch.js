@@ -42,7 +42,10 @@ let sledSliding = false; // animation
 let sledSlideSpeed = 6; //speed of sled
 
 let sledTrail = [];
+<<<<<<< HEAD
 let santaTrail = [];
+=======
+>>>>>>> dc
 
 let playerX = 200;
 let playerY = 300;
@@ -58,8 +61,37 @@ let hillSpeed = 3;
 
 let groundY = 350;
 
+<<<<<<< HEAD
 let obstacles = [];
 let gameOver = false;
+=======
+//snowman
+let snowmanImg;
+let obstacles = [];
+
+let snowmanSpawn = false;
+let snowmanSpawnDelay = 10;
+let snowmanSpawnTimer = 0;
+let gameOver = false;
+
+//santa
+let santaImg;
+let santaX, santaY;
+
+let santaSliding = false;
+let santaSlideSpeed= 6 ;
+let santaTrail = [];
+
+let santaW = 70;
+let santaH = 45;
+let moveRight = false;
+
+let crashSnow = [];
+
+let btnHome;
+let btnRetry;
+let buttonSpacing = 50;
+>>>>>>> dc
 
 // Audio variables
 let fireplaceSound;
@@ -84,7 +116,7 @@ let snowflakes = [];
 
 //stars
 let stars = [];
-
+ 
 class Cloud {
   constructor(x, y, speed, scale = 1, alphaRange = [150, 200]) {
     this.x = x;
@@ -163,6 +195,59 @@ class SledTrailFlake {
     return this.alpha <= 0 || this.size <= 0;
   }
 }
+class SantaTrailFlake {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = random(8, 14);
+    this.alpha = 255;
+    this.shrinkSpeed = random(0.2, 0.5);
+    this.fadeSpeed = random(3, 6);
+  }
+
+  update() {
+    this.size -= this.shrinkSpeed;
+    this.alpha -= this.fadeSpeed;
+  }
+
+  display() {
+    noStroke();
+    fill(255, this.alpha);
+    circle(this.x, this.y, this.size);
+  }
+
+  isGone() {
+    return this.alpha <= 0 || this.size <= 0;
+  }
+}
+
+
+class SledTrailFlake {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.size = random(8, 14);
+    this.alpha = 255;
+    this.shrinkSpeed = random(0.2, 0.5);
+    this.fadeSpeed = random(3, 6);
+  }
+
+  update() {
+    this.size -= this.shrinkSpeed;
+    this.alpha -= this.fadeSpeed;
+  }
+
+  display() {
+    noStroke();
+    fill(255, this.alpha);
+    circle(this.x, this.y, this.size);
+  }
+
+  isGone() {
+    return this.alpha <= 0 || this.size <= 0;
+  }
+}
+
 class SantaTrailFlake {
   constructor(x, y) {
     this.x = x;
@@ -389,6 +474,14 @@ function preload() {
   // Load sled image
   sledImg = loadImage('sled.png');
 
+<<<<<<< HEAD
+=======
+  // Load santa image 
+  santaImg = loadImage('santa.png');
+
+  //Load snowman image
+  snowmanImg = loadImage('snowman.png');
+>>>>>>> dc
 
   // ********************
   // Load Audio
@@ -398,7 +491,11 @@ function preload() {
   doorOpenSound = loadSound('audio/door opening.mp3');
   christmasMusic = loadSound('audio/christmas_song.mp3');
   sparkleSound = loadSound('audio/sparkle.wav');
+<<<<<<< HEAD
   jumpscareSound = loadSound('audio/ho_ho_ho.wav');
+=======
+  santaSound = loadSound('audio/santaclaus.mp3');
+>>>>>>> dc
 }
 
 function draw() {
@@ -408,8 +505,9 @@ function draw() {
     //bg music
     if(!townMusic.isPlaying()) {
       townMusic.loop();
-      townMusic.setVolume(0.8);
     }
+    townMusic.setVolume(0.8);
+       
     // Add snowflakes in town scene
     updateAndDrawSnowflakes();
     displayTownText();
@@ -435,12 +533,22 @@ function draw() {
         //leaves snow trail puff
         sledTrail.push(new SledTrailFlake(sledX, sledY +sledH/2));
 
+<<<<<<< HEAD
     // When it slides off screen, switch to sledding screen
     if (sledX > width + 200) {
         sledSliding = false;
         currentPageIndex = 2; // Go to sledding screen
     }
     }   
+=======
+        // When it slides off screen, switch to sledding screen
+        if (sledX > width + 200) {
+            sledSliding = false;
+            currentPageIndex = 2; // Go to sledding screen
+        }
+    }
+
+>>>>>>> dc
    // Draw sled trail
     for (let i = sledTrail.length - 1; i >= 0; i--) {
          let t = sledTrail[i];
@@ -451,11 +559,60 @@ function draw() {
             sledTrail.splice(i, 1);
         }
     }
+<<<<<<< HEAD
   }
+=======
+
+    //draw santa
+    if (!santaSliding) {
+        // Show initial Santa image
+        image(santaImg, santaX, santaY, santaW, santaH);
+    } else {
+        // Draw Santa with flip if moving left/right
+        push();
+        translate(santaX + santaW / 2, santaY + santaH / 2); //move origin to center of santa image so easier to flip
+        if (moveRight) {
+            scale(-1, 1); // flip image when moving left
+        }   
+    image(santaImg, -santaW / 2, -santaH / 2, santaW, santaH);
+    pop();
+    }
+
+  
+    if (santaSliding) {
+        if(moveRight) {
+            santaX += santaSlideSpeed;   // slide horizontally (goes to the left)
+            santaTrail.push(new SantaTrailFlake(santaX, santaY + santaH / 2)); // trail on left
+        } else {
+            santaX -= santaSlideSpeed;
+            santaTrail.push(new SantaTrailFlake(santaX + santaW, santaY + santaH / 2)); // trail on right
+        }
+    }   
+
+   // Draw santa trail
+    for (let i = santaTrail.length - 1; i >= 0; i--) {
+        let t = santaTrail[i];
+        t.update();
+        t.display();
+        if (t.isGone()) {
+            santaTrail.splice(i, 1);
+        }
+    }
+
+    // Loop Santa back when off-screen
+    if (moveRight && santaX > width) {
+        moveRight = false;   // reverse direction
+        santaX = width;        // start from right
+    } else if (!moveRight && santaX + santaW < 0) {
+        moveRight = true;    // reverse direction
+        santaX = -santaW;      // start from left
+    }
+  
+>>>>>>> dc
     // --- Hover detection for interactive objects ---
-  if (currentPageIndex === 0 && detectColor(doorColor)) {
-    cursor(HAND); // town door
-  } else if (currentPageIndex === 1) {
+    if (currentPageIndex === 0 && detectColor(doorColor)) {
+        cursor(HAND); // town door
+    } else if (currentPageIndex === 1) {
     if (detectColor(doorColor_livingroom)) {
       cursor(HAND); // living room door
     } else if (isNearTree(mouseX, mouseY)) {
@@ -467,11 +624,13 @@ function draw() {
     } else {
       cursor(ARROW); // default
     }
-  } else {
-    cursor(ARROW);
+    } else {
+      cursor(ARROW);
+     }
   }
 
 
+<<<<<<< HEAD
 
   // Living room interactive elements (scene 1)
     if (currentPageIndex === 1) {
@@ -479,6 +638,15 @@ function draw() {
       if (townMusic.isPlaying()) {
         townMusic.stop();   // <-- use stop instead of setVolume(0)
     }
+=======
+    // Living room interactive elements (scene 1)
+    if (currentPageIndex === 1) {
+        //stop town music
+        if (townMusic.isPlaying()) {
+            // townMusic.stop();
+            townMusic.setVolume(0);
+        }
+>>>>>>> dc
 
 
     // Draw radio
@@ -486,12 +654,12 @@ function draw() {
 
     // Draw tree decorations
     for (let ornament of treeDecorations) {
-      ornament.display();
+        ornament.display();
     }
 
     // Draw fireplace effects
     if (fireplaceState === 'on') {
-      updateAndDrawFireEmbers();
+        updateAndDrawFireEmbers();
     }
 
     // Draw sparkles
@@ -499,11 +667,258 @@ function draw() {
 
     // Handle jumpscare
     if (showJumpscare) {
-      displayJumpscare();
+        displayJumpscare();
     }
 
     // Display interaction hints
     displayInteractionHints();
+    }
+
+    //Sled Game (scene 2)
+    if (currentPageIndex === 2) {
+
+        // Stop everything if crashed
+        if (gameOver) {
+            background(30, 60, 120, 220);
+
+            drawSnowOverlay();
+
+            textAlign(CENTER, CENTER);
+
+            fill(150, 220, 255, 120);
+            textSize(127);
+            text("❄ CRASH! ❄", width / 2, 145);  // glow
+
+            fill(180, 240, 255);
+            textSize(115);
+            text("❄ CRASH! ❄", width / 2, 150); // front text
+
+            // Button dimensions
+            let btnWidth = 200;
+            let btnHeight = 80;
+            btnHome = { x: width/2 - btnWidth - buttonSpacing/2, y: 420, w: btnWidth, h: btnHeight };
+            btnRetry = { x: width/2 + buttonSpacing/2, y: 420, w: btnWidth, h: btnHeight };
+
+            // Draw glowing buttons
+            drawGlowButton(btnHome.x, btnHome.y, btnHome.w, btnHome.h, "HOME");
+            drawGlowButton(btnRetry.x, btnRetry.y, btnRetry.w, btnRetry.h, "RETRY");
+
+            return;
+        }
+
+        // HILL SCROLL
+        background(30, 60, 120);
+
+        drawHill(hillY);
+
+        if (hillY < height) {             // draw a second hill above until first fully scrolls
+        drawHill(hillY - height);     
+        }
+
+        hillY += hillSpeed;
+        
+        // Check if the hill has completely scrolled off the screen
+        if (hillY >= height) {
+            // Hill is off the screen, start spawning snowmen
+            if (!snowmanSpawn) {
+                snowmanSpawn = true; // Set flag to true to prevent multiple spawns
+                snowmanSpawnTimer = 0; // Reset the timer for spawning snowmen
+            }
+
+            if (snowmanSpawn){
+                snowmanSpawnTimer++;
+            }
+            
+            // Handle snowman spawning after hill is off-screen
+            if (snowmanSpawnTimer >= snowmanSpawnDelay){
+                if (frameCount % 40 === 0) {
+                    createSnowman(); // Call your function to create a snowman
+                    snowmanSpawnTimer = 0; //reset timer
+                }
+            }
+        }
+        //snowfall
+        drawSnowOverlay();
+
+    // GRAVITY (flappy-bird style)
+    playerVY += gravity;
+    playerY += playerVY;
+
+    // GROUND COLLISION
+    let realGround = height - 200; // <<< FIXED GROUND //where the sled image will stop on the screen vertically
+    if (playerY > realGround) {
+        playerY = realGround;
+        playerVY = 0;
+    }
+
+    // Draw sled
+    image(sledImg, playerX, playerY, sledW, sledH);
+
+          // MOVE + DRAW SNOWMAN
+    for (let i = obstacles.length - 1; i >= 0; i--) {
+        let ob = obstacles[i];
+        ob.x -= 6;
+
+        image(snowmanImg, ob.x, ob.y, ob.w, ob.h);
+
+        if (ob.x < -200) {
+            obstacles.splice(i, 1);
+            continue;
+        }
+
+        // ===== CUSTOM TIGHT HITBOX =====
+
+        // how big the REAL sled body is inside the PNG:
+        let hitboxWidth = sledW * 0.55;   // 55% of width
+        let hitboxHeight = sledH * 0.6;   // 60% of height
+
+        // offset to center the hitbox on the sled
+        let hitboxOffsetX = (sledW - hitboxWidth) * 0.05;
+        let hitboxOffsetY = (sledH - hitboxHeight) / 2;
+
+        // compute hitbox edges
+        let hitLeft   = playerX + hitboxOffsetX;
+        let hitRight  = hitLeft + hitboxWidth;
+        let hitTop    = playerY + hitboxOffsetY;
+        let hitBottom = hitTop + hitboxHeight;
+
+        // collision check
+        if (
+            hitRight > ob.x &&
+            hitLeft < ob.x + ob.w &&
+            hitBottom > ob.y &&
+            hitTop < ob.y + ob.h
+        ) {
+            gameOver = true;
+        }
+    }
+}
+    
+}
+ 
+function createSnowman() {
+  let w = 40;               // obstacle width
+  let h = random(40, 100);  // obstacle height
+
+  // Random Y position along the right side (from top to near ground)
+  let yMin = 50;                    // top limit
+  let yMax = height - h - 50;       // bottom limit
+  let y = random(yMin, yMax);
+
+  let ob = {
+    x: width + 50,   // start off-screen right
+    y: y,            // random vertical position
+    w: w,
+    h: h
+  };
+  
+  obstacles.push(ob);
+}
+
+
+function drawGlowButton(x, y, w, h, label) {
+    push();
+    rectMode(CORNER);
+    textAlign(CENTER, CENTER);
+    textSize(30);
+
+    
+    // Check if mouse is over the button
+    let isHover = mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
+
+       // Calculate pulsing effect for glow
+    let pulse = isHover ? 5 * sin(frameCount * 0.2) : 0; // pulse only on hover
+
+    // Glow effect
+    for (let i = 10; i > 0; i--) {
+        noFill();
+        stroke(150, 220, 255, isHover ? 120 + 60 * sin(frameCount * 0.3) : 50); // dynamic alpha
+        strokeWeight(i + pulse); // pulsate stroke weight
+        rect(x - i/2 - pulse/2, y - i/2 - pulse/2, w + i + pulse, h + i + pulse, 12);
+    }
+
+    // Button background
+    noStroke();
+    fill(isHover ? color(200, 255, 255) : color(180, 240, 255)); // lighter when hovered
+    rect(x, y, w, h, 12);
+
+    // Button text
+    fill(20, 50, 80); // darker text for contrast
+    text(label, x + w/2, y + h/2);
+    pop();
+}
+
+function drawSnowOverlay() {
+    // Create new snowflakes
+    if (frameCount % 3 === 0) {
+        crashSnow.push({
+            x: random(width),
+            y: -10,
+            size: random(2, 5),
+            speed: random(1, 3)
+        });
+    }
+
+    // Draw & update snowflakes
+   for (let i = crashSnow.length - 1; i >= 0; i--) {
+    let s = crashSnow[i];
+    
+    // Add glow / bluish tint
+    stroke(180, 200, 255, 150); // faint outline
+    strokeWeight(1);
+    fill(200, 220, 255, 200); // bluish snow
+    
+    circle(s.x, s.y, s.size);
+    
+    noStroke(); // reset for next frame
+    
+    s.y += s.speed;
+    
+    if (s.y > height) crashSnow.splice(i, 1);
+    }
+
+}
+
+function drawHill(yOffset){
+    noStroke();
+    fill(255); // white snow
+
+    beginShape();
+    for (let x = 0; x <= width; x++) {
+    let y = (height - 400) + 350 * noise(x * 0.015 + yOffset *0.01) - yOffset;
+    y+= random(-2,2);
+    vertex(x, y);
+    }
+    vertex(width, height);
+    vertex(0, height);
+    endShape(CLOSE);
+}
+
+
+function createObstacle() {
+  let w = 40;               // obstacle width
+  let h = random(40, 100);  // obstacle height
+
+  // Random Y position along the right side (from top to near ground)
+  let yMin = 50;                    // top limit
+  let yMax = height - h - 50;       // bottom limit
+  let y = random(yMin, yMax);
+
+  let ob = {
+    x: width + 50,   // start off-screen right
+    y: y,            // random vertical position
+    w: w,
+    h: h
+  };
+  
+  obstacles.push(ob);
+}
+
+function keyPressed() {
+   if (currentPageIndex === 2 && !gameOver) {   // only jump on sledding screen
+    if (key === ' ') {   // press space
+      playerVY = jumpForce;    // jump force
+    }
   }
 
   //Sled Game (scene 2)
@@ -628,6 +1043,18 @@ function setup() {
   sledX = 1050; //position
   sledY = 650; //position
 
+<<<<<<< HEAD
+=======
+  //santa
+  santaW = 350 // its width
+  santaH = santaW * (santaImg.height / santaImg.width); //helps keep the aspect ratio
+  santaX = 1000; //position
+  santaY = 50; //position
+
+    btnHome = { x: width/2 - 160 - buttonSpacing/2, y: 420, w: 160, h: 60 };
+    btnRetry = { x: width/2 + buttonSpacing/2, y: 420, w: 160, h: 60 };
+
+>>>>>>> dc
   // Initialize snowflakes
   for (let i = 0; i < 50; i++) {
     snowflakes.push(new Snowflake(random(width), random(height)));
@@ -777,7 +1204,16 @@ function mousePressed() {
    sledSliding = true;
   }
 
+<<<<<<< HEAD
 
+=======
+ // Santa Click
+  if (currentPageIndex === 0 && mouseX > santaX && 
+    mouseX < santaX + santaW && mouseY > santaY && mouseY < santaY + santaH) {
+   santaSliding = true;
+
+  }
+>>>>>>> dc
 
   // Living room interactions
   if (currentPageIndex === 1) {
@@ -837,6 +1273,66 @@ function mousePressed() {
       }
     }
   }
+  
+
+  // Check if game over screen is active
+  if (gameOver) {
+    // HOME button
+    if (
+      mouseX >= btnHome.x &&
+      mouseX <= btnHome.x + btnHome.w &&
+      mouseY >= btnHome.y &&
+      mouseY <= btnHome.y + btnHome.h
+    ) {
+      goHome();
+    }
+
+    // RETRY button
+    if (
+      mouseX >= btnRetry.x &&
+      mouseX <= btnRetry.x + btnRetry.w &&
+      mouseY >= btnRetry.y &&
+      mouseY <= btnRetry.y + btnRetry.h
+    ) {
+      retrySledGame();
+    }
+  }
+}
+
+// Function to return to home screen
+function goHome() {
+  currentPageIndex = 0; // or whatever your home index is
+  gameOver = false;
+
+  // Reset sled/game variables if needed
+  sledX = 1050;
+  sledY = 650;
+  playerY = 300;
+  playerVY = 0;
+  obstacles = [];
+  sledSliding = false;
+}
+
+// Function to retry sled game
+function retrySledGame() {
+  currentPageIndex = 2; // sledding screen
+  gameOver = false;
+
+  // Reset sled/game variables
+  playerY = 300;
+  playerVY = 0;
+  playerX = 200;      // optional, reset sled horizontal position
+  sledX = 1050;       // if using sled sliding again
+  sledY = 650;
+  sledSliding = false;
+
+  // Clear obstacles and particles
+  obstacles = [];
+  sledTrail = [];
+  crashSnow = [];
+
+  // Reset background hill scroll
+  hillY = 0;
 }
 
 //--draw single cloud--
@@ -1068,7 +1564,7 @@ function displayTownText() {
     fill(100,100,120);
     strokeWeight(3);
     //stroke(200,200,200);
-    text("Click sled for fun", width-450, height-30);
+    text("Click sled for fun", width-550, height-30);
   pop();
 }
 

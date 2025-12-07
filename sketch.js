@@ -65,6 +65,7 @@ let gameOver = false;
 let fireplaceSound;
 let christmasMusic;
 let doorOpenSound;
+let jumpscareSound;
 
 // Interactive objects state
 let treeDecorations = [];
@@ -396,6 +397,8 @@ function preload() {
   fireplaceSound = loadSound('audio/fireplace.mp3');
   doorOpenSound = loadSound('audio/door opening.mp3');
   christmasMusic = loadSound('audio/christmas_song.mp3');
+  sparkleSound = loadSound('audio/sparkle.wav');
+  jumpscareSound = loadSound('audio/ho_ho_ho.wav');
 }
 
 function draw() {
@@ -471,12 +474,12 @@ function draw() {
 
 
   // Living room interactive elements (scene 1)
-  if (currentPageIndex === 1) {
-    //stop town music
-    if (townMusic.isPlaying()) {
-      // townMusic.stop();
-      townMusic.setVolume(0);
+    if (currentPageIndex === 1) {
+      // stop town music
+      if (townMusic.isPlaying()) {
+        townMusic.stop();   // <-- use stop instead of setVolume(0)
     }
+
 
     // Draw radio
     displayRadio();
@@ -738,6 +741,17 @@ function detectColor(targetColor) { //function that when click on x, y scene/ima
 }
 
 function mousePressed() {
+  // Resume audio context if blocked
+  if (getAudioContext().state !== 'running') {
+    getAudioContext().resume();
+  }
+
+  // Optional: trigger music if in town scene
+  if (currentPageIndex === 0 && !townMusic.isPlaying()) {
+    townMusic.loop();
+    townMusic.setVolume(0.8);
+  }
+
   // Navigation between scenes
   if (detectColor(doorColor)) {
     currentPageIndex = 1; // go to living room scene
@@ -770,10 +784,10 @@ function mousePressed() {
     // Christmas tree decoration
     if (isNearTree(mouseX, mouseY)) {
       let colors = [
-        color(255, 0, 0),    // Red
-        color(0, 255, 0),    // Green
-        color(0, 0, 255),    // Blue
-        color(255, 215, 0),  // Gold
+        color(230, 130, 130),    // Red
+        color(130, 230, 130),    // Green
+        color(130, 130, 230),    // Blue
+        color(245, 205, 90),  // Gold
         color(255, 192, 203) // Pink
       ];
       let types = ['ball', 'star', 'candy'];
@@ -787,6 +801,7 @@ function mousePressed() {
       for (let i = 0; i < 5; i++) {
         sparkles.push(new Sparkle(mouseX + random(-20, 20), mouseY + random(-20, 20)));
       }
+      sparkleSound.play(0, 1, 0.3, 0, 2);
     }
 
     // Radio interaction
@@ -805,6 +820,7 @@ function mousePressed() {
     }
 
     // Fireplace interaction
+    // Fireplace interaction
     if (isNearFireplace(mouseX, mouseY)) {
       if (fireplaceState === 'off') {
         fireplaceState = 'on';
@@ -813,8 +829,10 @@ function mousePressed() {
         // Extinguish fire - trigger jumpscare
         fireplaceState = 'off';
         if (fireplaceSound) fireplaceSound.stop();
-        showJumpscare = true;
-        jumpscareTimer = 0;
+
+        // Call the trigger function so sound plays once
+        triggerJumpscare();
+
         fireEmbers = []; // Clear embers
       }
     }
@@ -944,6 +962,7 @@ function displayRadio() {
 
 function displayInteractionHints() {
   push();
+  noStroke();
   fill(128, 128, 128, 200);
   textAlign(CENTER);
   textSize(14);
@@ -1052,3 +1071,20 @@ function displayTownText() {
     text("Click sled for fun", width-450, height-30);
   pop();
 }
+
+function triggerJumpscare() {
+  // Resume audio context if blocked
+  if (getAudioContext().state !== 'running') {
+    getAudioContext().resume();
+  }
+
+  showJumpscare = true;
+  jumpscareTimer = 0;
+
+  if (jumpscareSound && jumpscareSound.isLoaded()) {
+    jumpscareSound.setVolume(0.7); // safe volume
+    jumpscareSound.play();         // play once
+  }
+}
+
+

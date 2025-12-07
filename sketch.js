@@ -64,6 +64,10 @@ let obstacles = [];
 let snowmanSpawn = false;
 let gameOver = false;
 
+// Score system
+let score = 0;
+let highScore = 0;
+
 //santa
 let santaImg;
 let santaX, santaY;
@@ -597,11 +601,17 @@ function draw() {
         if (gameOver) {
             if (sleighRideSound.isPlaying()) {
                 sleighRideSound.stop(); // Stop the sled game music if it's playing
-            } 
+            }
 
         if (!endingSound.isPlaying()) {
             endingSound.loop();  // Start the audio, and loop it during the game
-        } 
+        }
+
+            // Update high score
+            if (score > highScore) {
+                highScore = score;
+            }
+
             background(30, 60, 120, 220);
 
             drawSnowOverlay();
@@ -611,11 +621,30 @@ function draw() {
 
             fill(150, 220, 255, 120);
             textSize(127);
-            text("❄ CRASH! ❄", width / 2, 145);  // glow
+            text("❄ CRASH! ❄", width / 2, 115);  // glow
 
             fill(180, 240, 255);
             textSize(115);
-            text("❄ CRASH! ❄", width / 2, 150); // front text
+            text("❄ CRASH! ❄", width / 2, 120); // front text
+
+            // Display final score
+            fill(255);
+            stroke(0);
+            strokeWeight(3);
+            textSize(48);
+            text("Score: " + score, width / 2, 220);
+
+            // Display high score
+            fill(255, 215, 0);
+            textSize(32);
+            text("Best: " + highScore, width / 2, 280);
+
+            // New high score message
+            if (score === highScore && score > 0) {
+                fill(255, 100, 100);
+                textSize(28);
+                text("NEW HIGH SCORE!", width / 2, 330);
+            }
             pop();
 
             // Button dimensions
@@ -671,6 +700,11 @@ function draw() {
     // Draw sled
     image(sledImg, playerX, playerY, sledW, sledH);
 
+    // Increment score while playing (every 10 frames)
+    if (frameCount % 10 === 0) {
+      score++;
+    }
+
     //on screen text
     push();
       fill(90,90,180);
@@ -679,6 +713,22 @@ function draw() {
       textFont('Georgia');
       text("Click spacebar to steer up", width-width*.98, height-height*.95);
       text("Avoid snowman", width-width*.98, height-height*.90);
+    pop();
+
+    // Display score
+    push();
+      fill(255);
+      stroke(0);
+      strokeWeight(3);
+      textSize(32);
+      textFont('Georgia');
+      textAlign(RIGHT, TOP);
+      text("Score: " + score, width - 30, 30);
+
+      // Display high score
+      fill(255, 215, 0);
+      textSize(20);
+      text("Best: " + highScore, width - 30, 70);
     pop();
 
     // MOVE + DRAW SNOWMAN
@@ -865,9 +915,9 @@ function setup() {
 
   //sled
   sledW = 200; //its width
-  sledH = sledW * (sledImg.height/ sledImg.width); //helps keep the aspect ratio 
+  sledH = sledW * (sledImg.height/ sledImg.width); //helps keep the aspect ratio
   sledX = 1050; //position
-  sledY = 650; //position
+  sledY = 580; //position
 
   //santa
   santaW = 350 // its width
@@ -1002,9 +1052,10 @@ function mousePressed() {
   }
 
   // Sled Click
-  if (currentPageIndex === 0 && mouseX > sledX && 
+  if (currentPageIndex === 0 && mouseX > sledX &&
     mouseX < sledX + sledW && mouseY > sledY && mouseY < sledY + sledH) {
    sledSliding = true;
+   score = 0; // Reset score when starting new game
   }
 
  // Santa Click
@@ -1107,6 +1158,9 @@ function goHome() {
   currentPageIndex = 0; // or whatever your home index is
   gameOver = false;
 
+  // Reset score
+  score = 0;
+
   if (endingSound.isPlaying()) {
     endingSound.stop();  // Stop crash sound
   }
@@ -1135,6 +1189,9 @@ function goHome() {
 function retrySledGame() {
   currentPageIndex = 2; // sledding screen
   gameOver = false;
+
+  // Reset score
+  score = 0;
 
   if (endingSound.isPlaying()) {
     endingSound.stop();  // Stop crash sound

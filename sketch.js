@@ -14,25 +14,6 @@ let townMusic;
 let frontClouds = [];
 let distantClouds = [];
 
-//window lights
-let windowLights = [];
-let windows = [
-    {x:70, y:370, w :55, h:80},
-    {x:70, y:520, w :55, h:80},
-    {x:210, y:400, w :55, h:70},
-    {x:300, y:500, w :55, h:70},
-    {x:215, y:600, w :55, h:70},
-    {x:385, y:400, w :55, h:70},
-    {x:385, y:600, w :55, h:70},
-    {x:510, y:515, w :55, h:70},
-    {x:855, y:580, w :55, h:80},
-    {x:1100, y:370, w :55, h:80},
-    {x:1100, y:520, w :55, h:80},
-    {x:1330, y:400, w :55, h:70},
-    {x:1330, y:500, w :55, h:70},
-    {x:1240, y:600, w :55, h:70}
-];
-
 //sled
 let sledImg;
 let sledX, sledY;
